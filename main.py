@@ -3,7 +3,12 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-# Load the bot token from environment variables
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 TOKEN = os.environ.get("DISCORD_TOKEN")
 
 if not TOKEN:
@@ -33,10 +38,8 @@ async def on_ready():
     message="Your detailed message"
 )
 async def feedback(interaction: discord.Interaction, topic: str, message: str):
-    # Defer response immediately to prevent Discord's 3-second timeout
     await interaction.response.defer(ephemeral=True)
     
-    # Fetch the target channel
     channel = bot.get_channel(FEEDBACK_CHANNEL_ID)
     
     if channel is None:
@@ -49,7 +52,6 @@ async def feedback(interaction: discord.Interaction, topic: str, message: str):
             )
             return
 
-    # Send feedback into specified channel with role mention
     await channel.send(
         f"📩 **New Feedback Received! <@&1433856361120268318>**\n"
         f"**From:** {interaction.user.mention}\n"
@@ -57,7 +59,6 @@ async def feedback(interaction: discord.Interaction, topic: str, message: str):
         f"**Message:** {message}"
     )
 
-    # Confirm submission
     await interaction.followup.send(
         "Thank you! Your feedback has been submitted.", 
         ephemeral=True
