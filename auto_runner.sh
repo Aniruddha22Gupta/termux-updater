@@ -2,15 +2,13 @@ cat << 'EOF' > auto_runner.sh
 #!/bin/bash
 
 BRANCH="main"
-CHECK_INTERVAL=30
+CHECK_INTERVAL=15
 
-# Load environment variables if .env exists
 [ -f .env ] && source .env
-
 termux-wake-lock
 
 echo "=========================================="
-echo "Listening for commits on branch: $BRANCH"
+echo "Listening for updates on branch: $BRANCH"
 echo "=========================================="
 
 while true; do
@@ -20,21 +18,25 @@ while true; do
     REMOTE_HASH=$(git rev-parse origin/$BRANCH 2>/dev/null)
 
     if [ -n "$REMOTE_HASH" ] && [ "$LOCAL_HASH" != "$REMOTE_HASH" ]; then
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] New commit detected ($REMOTE_HASH)!"
+        echo "[$(date '+%H:%M:%S')] Update detected: $REMOTE_HASH"
 
-        REQUIREMENTS_CHANGED=$(git diff --name-only $LOCAL_HASH $REMOTE_HASH | grep "requirements.txt")
+        # Force termination of ANY running instance of main.py
+        pkill -9 -f "main.py" > /dev/null 2>&1
+        sleep 2
 
-        pkill -f "python main.py" > /dev/null 2>&1
-        git reset --hard origin/$BRANCH > /dev/null 2>&1
+        # Reset code to match remote commit
+        git reset --hard origin/$BRANCH
 
-        if [ -n "$REQUIREMENTS_CHANGED" ] && [ -f "requirements.txt" ]; then
-            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Installing dependencies..."
+        # Check for requirements update
+        if git diff --name-only $LOCAL_HASH $REMOTE_HASH | grep -q "requirements.txt"; then
+            echo "[$(date '+%H:%M:%S')] Updating dependencies..."
             pip install -r requirements.txt
         fi
 
         if [ -f "main.py" ]; then
-            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Executing main.py..."
-            python main.py &
+            echo "[$(date '+%H:%M:%S')] Restarting main.py..."
+            # -u enables unbuffered output so logs print immediately
+            python -u main.py &
         fi
     fi
 
@@ -43,3 +45,4 @@ done
 EOF
 
 chmod +x auto_runner.sh
+./auto_runner.sh
