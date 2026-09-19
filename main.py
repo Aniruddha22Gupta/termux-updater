@@ -26,7 +26,7 @@ class InputBot(commands.Bot):
 
 bot = InputBot()
 
-feedback_CHANNEL_ID = 1472268841731096810 
+feedback_CHANNEL_ID = 1472268841731096810
 
 @bot.event
 async def on_ready():
