@@ -34,7 +34,7 @@ async def on_ready():
 
 @bot.tree.command(name="suggestion", description="Submit suggestion")
 @app_commands.describe(
-    topic="What is your suggestion about?",
+    topic="What is your skibidi about?",
     message="Your detailed message"
 )
 async def suggestion(interaction: discord.Interaction, topic: str, message: str):
