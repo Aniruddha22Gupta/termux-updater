@@ -2,7 +2,7 @@
 
 # Configuration
 BRANCH="main"
-CHECK_INTERVAL=30
+CHECK_INTERVAL=5
 
 # Keep CPU awake when screen is off/locked
 termux-wake-lock
