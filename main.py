@@ -26,41 +26,41 @@ class InputBot(commands.Bot):
 
 bot = InputBot()
 
-suggestion_CHANNEL_ID = 1472268841731096810 
+feedback_CHANNEL_ID = 1472268841731096810 
 
 @bot.event
 async def on_ready():
     print(f"🤖 Bot is logged in and ready as {bot.user}")
 
-@bot.tree.command(name="suggestion", description="Submit suggestion")
+@bot.tree.command(name="feedback", description="Submit feedback")
 @app_commands.describe(
-    topic="What is your suggestion about?",
+    topic="What is your feedback about?",
     message="Your detailed message"
 )
-async def suggestion(interaction: discord.Interaction, topic: str, message: str):
+async def feedback(interaction: discord.Interaction, topic: str, message: str):
     await interaction.response.defer(ephemeral=True)
     
-    channel = bot.get_channel(suggestion_CHANNEL_ID)
+    channel = bot.get_channel(feedback_CHANNEL_ID)
     
     if channel is None:
         try:
-            channel = await bot.fetch_channel(suggestion_CHANNEL_ID)
+            channel = await bot.fetch_channel(feedback_CHANNEL_ID)
         except (discord.NotFound, discord.Forbidden):
             await interaction.followup.send(
-                "Error: suggestion channel could not be found or access is restricted.", 
+                "Error: feedback channel could not be found or access is restricted.", 
                 ephemeral=True
             )
             return
 
     await channel.send(
-        f"📩 **New suggestion Received! <@&1433856361120268318>**\n"
+        f"📩 **New feedback Received! <@&1433856361120268318>**\n"
         f"**From:** {interaction.user.mention}\n"
         f"**Topic:** {topic}\n"
         f"**Message:** {message}"
     )
 
     await interaction.followup.send(
-        "Thank you! Your suggestion has been submitted.", 
+        "Thank you! Your feedback has been submitted.", 
         ephemeral=True
     )
 
