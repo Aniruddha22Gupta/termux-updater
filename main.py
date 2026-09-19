@@ -3,7 +3,6 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-# Attempt to load variables from a local .env file if present
 try:
     from dotenv import load_dotenv
     load_dotenv()
@@ -28,7 +27,6 @@ class InputBot(commands.Bot):
 
 bot = InputBot()
 
-# Target channel ID
 FEEDBACK_CHANNEL_ID = 1472268841731096810 
 
 @bot.event
